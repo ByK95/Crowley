@@ -8,7 +8,7 @@ Add More $
 {% block main %}
 <h2>{{ tableTitle }}</h2>
 
-<form>
+<form id="crawlerForm" action="/crawler/edit">
     <h3>Url</h3>
     {% for url in urls %}
     <div id="urls">
@@ -72,5 +72,10 @@ Add More $
     function remove(e){
         $('#'+e.parentElement.parentElement.getAttribute("id")).remove();
     }
+
+    $("#saveCrawler")[0].addEventListener("click",function(){
+        document.getElementById("crawlerForm").submit();
+    });
+
 </script>
 {% endblock %}
