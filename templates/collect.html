@@ -24,7 +24,7 @@ Add More $
             <td><a href="/crawler/{{row.id}}">{{ row.name }}</a></td>
             <td><button action='run/{{ row.id }}' type="button" class="btn btn-primary">Run </button></td>
             <td><button action='getlast/{{ row.id }}' type="button" class="btn btn-info">Get last result</button></td>
-            <td><button action='deactivate/{{ row.id }}' type="button" class="btn btn-warning">Deactivate</button></td>
+            <td><button action='deactivate/{{ row.id }}' type="button" class="btn btn-warning">Hide</button></td>
         </tr>
         {% endfor %}
       </tbody>
