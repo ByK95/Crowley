@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Add More $
+{% endblock %}
+
+
+{% block main %}
+<h2>{{ tableTitle }}</h2>
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <button class="btn btn-outline-secondary" type="button" id="button-addon1">Search</button>
+    </div>
+    <input type="text" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+  </div>
+
+<div class="editorWrapper"> 
+    <div id="editor">Hello, friend!</div>
+</div>
+<div class="d-inline dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Javascript
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <a class="dropdown-item lang" value="javascript" >Javascript</a>
+      <a class="dropdown-item lang" value="xml" >XML</a>
+      <a class="dropdown-item lang" value="css">CSS</a>
+      <a class="dropdown-item lang" value="scss">SCSS</a>
+      <a class="dropdown-item lang" value="python">Python</a>
+      <a class="dropdown-item lang" value="php">PHP</a>
+      <a class="dropdown-item lang" value="java">Java</a>
+      <a class="dropdown-item lang" value="ruby">Ruby</a>
+      <a class="dropdown-item lang" value="c_cpp">C/C++</a>
+      <a class="dropdown-item lang" value="coffee">CoffeeScript</a>
+      <a class="dropdown-item lang" value="json">json</a>
+      <a class="dropdown-item lang" value="perl">Perl</a>
+      <a class="dropdown-item lang" value="clojure">Clojure</a>
+      <a class="dropdown-item lang" value="ocaml">OCaml</a>
+      <a class="dropdown-item lang" value="csharp">C#</a>
+      <a class="dropdown-item lang" value="haxe">haXe</a>
+      <a class="dropdown-item lang" value="svg">SVG</a>
+      <a class="dropdown-item lang" value="textile">Textile</a>
+      <a class="dropdown-item lang" value="groovy">Groovy</a>
+      <a class="dropdown-item lang" value="liquid">Liquid</a>
+      <a class="dropdown-item lang" value="Scala">Scala</a>
+    </div>
+  </div>
+  <button type="d-inline button" class="btn btn-primary">SAVE</button>
+  <script>
+      $(".lang").each((item,element)=>{
+          element.addEventListener('click',function(){
+                $("#dropdownMenuButton")[0].innerText = element.innerText;
+                var mode = "ace/mode/" + element.attributes["value"].nodeValue;
+                editor.session.setMode(mode);
+          });
+        });
+  </script>
+
+
+<script src="/asset/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/javascript");
+</script>
+
+
+<style>
+#editor {
+    position: absolute;
+    width: 54%;
+    height: 400px;
+}
+.editorWrapper{
+    width: 54%;
+    height: 420px;
+}
+</style>
+{% endblock %}

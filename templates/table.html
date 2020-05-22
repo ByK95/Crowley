@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Add More $
+{% endblock %}
+
+
+{% block main %}
+<h2>{{ tableTitle }}</h2>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        {% for head in headers %}
+        <th scope="col">{{ head }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <th scope="row">{{loop.index}}</th>
+            {% for value in row %}
+            <td>{{ value }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

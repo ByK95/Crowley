@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Add More $
+{% endblock %}
+
+
+{% block main %}
+<h2>{{ tableTitle }}</h2>
+
+<form id='selectors'>
+    <h3>Selectors</h3>
+    {% for selector in pairs %}
+    <div id="selector{{ loop.index }}" class="form-group form-row">
+        <div class="col">
+            <input type="text" class="form-control" placeholder="XPath Selector" value="{{ selector }}">
+        </div>
+        <div class="col-md-auto">
+            <button onclick="remove(this)" type="button" class="btn btn-outline-secondary">X</button>
+        </div>
+    </div>  
+    {% endfor %}
+
+    <h3>Url</h3>
+    {% for url in urls %}
+    <div class="form-group form-row">
+        <div class="col">
+            <input type="text" class="form-control" placeholder="Url" value="{{ url }}">
+        </div>
+        <div class="col-md-auto">
+            <a href="{{ url }}" target="_blank" class="btn btn-outline-primary" role="button" aria-pressed="true">Page</a>
+        </div>
+        <div class="col-md-auto">
+            <button onclick="remove(this)" type="button" class="btn btn-outline-secondary">X</button>
+        </div>
+    </div>  
+    {% endfor %}
+</form>
+
+<button id="addSelector" type="button" class="btn btn-outline-secondary">Add Selector</button>
+<button id="addLink" type="button" class="btn btn-outline-secondary">Add Link</button>
+<button id="saveCrawler" type="button" class="btn btn-outline-primary">Save</button>
+
+
+<script>
+    function addAttr(element,key,value){
+        var typ = document.createAttribute(key);
+        typ.value = value;
+        element.attributes.setNamedItem(typ);
+        return element;
+    }
+
+    $("#addSelector")[0].addEventListener("click",function(){
+        var el = $( ".form-group" ).first().clone()
+        el[0].childNodes[1].childNodes[1].attributes.getNamedItem("value").nodeValue = "";
+        el[0].attributes.getNamedItem("id").nodeValue = "selector" + $("#selectors")[0].childElementCount;
+        el.appendTo( "#selectors" );
+    });
+
+    function remove(e){
+        $('#'+e.parentElement.parentElement.getAttribute("id")).remove();
+    }
+</script>
+{% endblock %}

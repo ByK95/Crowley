@@ -1,0 +1,200 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Add More $
+{% endblock %}
+
+{% block main %}
+<div class="mx-auto" style="width: 300px;">
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+        <button class="btn btn-outline-secondary" type="button" id="button-timerstr">Start Countdown</button>
+        </div>
+        <input type="text" id="timertime" class="form-control" placeholder="10:00" aria-label="" aria-describedby="button-timerstr">
+    </div>
+</div>
+<div class="display-1 text-center stoped"> <a id="counter" class="link">10:00</a> </div>
+<audio id="horn" src="/asset/bike-horn.wav" preload="auto"></audio>
+<!-- <div class="center">
+    <button id="singlebutton" class="btn btn-primary">Start</button> 
+</div> -->
+
+
+<style>
+.center {
+  margin-top: 16px;
+  position: absolute;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.link { 
+    background:none;
+    border:none;
+    cursor: pointer; 
+    }
+.stoped {
+    color: grey;
+}
+</style>
+<script>
+    var uTimer;
+    var counter = document.getElementById("counter");
+    var timerbutton = document.getElementById("button-timerstr");
+    var timertext = document.getElementById("timertime");
+
+    function validate(input){
+        return input.replace(/[^0123456789:]/gi,"")
+    }
+
+    function helper(text){
+        // Function adds : between hour:minute:second
+        var clean = text.replace(/:/g,"");
+        var tlenght = clean.length;
+        var arr = [];
+        if(tlenght > 6){
+            return clean.slice(tlenght-6,tlenght);
+        }else if(tlenght % 2 == 1){
+            // for(var i= (tlenght+1) / 2; i > -1 ; i--){
+            //     arr.push(clean.slice(2 * i -2, 2 * i))
+            //     arr = arr.reverse()  
+            // }
+            // return arr.join(":");
+        }else{
+            for(var i= 0; i < tlenght / 2; i++){
+                arr.push(clean.slice(2 * i, 2 * i + 2))
+            }
+            return arr.join(":");
+        }     
+        return clean;
+    }
+
+    // Function that rounds any interval over 60 into 59
+    function roundTimeIntervals(arr){
+        var divLenght = arr.length - 1
+        for(var i = 0; i < divLenght; i++){
+            if( parseInt(arr[i]) > 59){
+                arr[i] = 59;
+            } 
+        }
+        text = arr.join(":")
+    }
+
+    timertext.addEventListener("keyup",function(){
+        timertext.value = helper(validate(timertext.value))
+    })
+
+    class Timer{
+        constructor(hours,minutes,seconds){
+            this.countLeft = hours * 3600 + minutes * 60 + seconds;
+            this.timeInterval = this.countLeft;
+            this.isRunning = false;
+        };
+
+        setModel(model){
+            var self = this;
+            this.model = model;
+            this.calcTimeLeft();
+            this.model.addEventListener("click",function(){
+                if(self.isRunning){
+                    self.stop();
+                }else{
+                    self.start();
+                }
+            });
+        }
+
+        start(){
+            var that = this;
+            this.isRunning = true;
+            this.calcTimeLeft();
+            if(this.timerLoop === undefined){
+                this.timerLoop = setInterval(function(){
+                    return that.loop();
+                },1000);
+            }
+            if(this.model != undefined) this.model.parentElement.classList.remove("stoped");
+        };
+
+        stop(){
+            clearInterval(this.timerLoop);
+            this.timerLoop = undefined;
+            this.isRunning = false;
+            if(this.model != undefined){
+                this.model.parentElement.classList.add("stoped");
+            }
+        };
+
+        loop(self){
+            this.countLeft -= 1;
+            this.calcTimeLeft();
+            if( this.countLeft == 0 ){
+                this.stop();
+                this.countLeft = this.timeInterval;
+                if(this.sound != undefined) this.sound.play();
+            }
+        };
+
+        calcTimeLeft(){
+            var hours = Math.floor(this.countLeft / 3600);
+            var minutes = Math.floor((this.countLeft % 3600) / 60).toString().padStart(2,"0");
+            var seconds = Math.floor((this.countLeft % 60)).toString().padStart(2,"0");
+            if(this.model != undefined){
+                if (hours > 0 ){
+                    this.model.innerText = hours.toString() + ":" + minutes + ":" + seconds
+                } else {
+                    this.model.innerText = minutes + ":" + seconds
+                }
+            }
+        }
+
+    };
+
+    function startTimer(){
+        var timeLeft = timertext.value.split(":");
+        var timeIndex = 0;
+        console.log(timeLeft.length)
+        timeLeft.forEach((item,index) => {
+            timeLeft[index] = parseInt(item)
+            if(timeLeft[index] > 0){
+                resetTimer = false;
+            }
+        });
+        if(uTimer === undefined){
+            uTimer = new Timer(0,timeLeft[0],timeLeft[1]);
+            uTimer.sound = document.getElementById("horn");
+            uTimer.setModel(counter);
+            uTimer.start();
+        }else{
+            uTimer.countLeft = 0 * 3600 + timeLeft[0] * 60 + timeLeft[1];
+            uTimer.calcTimeLeft();
+            uTimer.start();
+        }
+        log_activity();
+    }
+    timerbutton.addEventListener("click",startTimer);
+    document.onkeypress = function(e){
+        if (event.keyCode == 32 && uTimer.isRunning) {
+            uTimer.stop();
+            return;
+        }
+        if (event.keyCode == 32 && !uTimer.isRunning) {
+            uTimer.start();
+            return;
+        }
+    };
+
+    function log_activity(){
+        $.post({
+            type: 'POST',
+            url: '/api/log/timer',
+            data: JSON.stringify({intr:timertext.value}),
+            success: function(data){return;},
+            contentType: "application/json",
+            dataType: 'json'
+        });
+    }
+        
+
+</script>
+{% endblock %}

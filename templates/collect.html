@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Add More $
+{% endblock %}
+
+
+{% block main %}
+<h2>{{ tableTitle }}</h2>
+<table class="table">
+    <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Crawler Name</th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in spiders %}
+        <tr>
+            <th scope="row">{{loop.index}}</th>
+            <td><a href="/crawler/{{row.id}}">{{ row.name }}</a></td>
+            <td><button action='run/{{ row.id }}' type="button" class="btn btn-primary">Run </button></td>
+            <td><button action='getlast/{{ row.id }}' type="button" class="btn btn-info">Get last result</button></td>
+            <td><button action='deactivate/{{ row.id }}' type="button" class="btn btn-warning">Deactivate</button></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+</table>
+
+<script>
+    $(".btn").each((index,element)=>{
+        element.addEventListener("click",function(el){
+            let attr = el.target.attributes["action"].nodeValue
+            $.post({
+                type: 'POST',
+                url: '/api/' + attr,
+                success: function(data){alert(data)}
+            });
+        });
+    });
+</script>
+{% endblock %}
