@@ -12,7 +12,7 @@ Add More $
     <h3>Url</h3>
     {% for url in urls %}
     <div id="urls">
-        <div class="form-group form-row">
+        <div id="url{{loop.index}}" class="form-group form-row">
             <div class="col">
                 <input type="text" class="form-control" placeholder="Url" value="{{ url }}">
             </div>
@@ -24,7 +24,6 @@ Add More $
             </div>
         </div> 
     </div>
-     
     {% endfor %}
 
     <h3>Selectors</h3>
@@ -66,7 +65,7 @@ Add More $
     $("#addLink")[0].addEventListener("click",function(){
         var el = $( ".form-row" ).first().clone()
         el[0].childNodes[1].childNodes[1].attributes.getNamedItem("value").nodeValue = "";
-        // el[0].attributes.getNamedItem("id").nodeValue = "selector" + $("#selectors")[0].childElementCount;
+        el[0].attributes.getNamedItem("id").nodeValue = "url" + ($("#urls")[0].childElementCount + 1);
         el.appendTo( "#urls" );
     });
 
