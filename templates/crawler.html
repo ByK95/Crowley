@@ -58,14 +58,18 @@ Add More $
     $("#addSelector")[0].addEventListener("click",function(){
         var el = $( "#selector1" ).first().clone()
         el[0].childNodes[1].childNodes[1].attributes.getNamedItem("value").nodeValue = "";
-        el[0].attributes.getNamedItem("id").nodeValue = "selector" + $("#selectors")[0].childElementCount;
+        var idn = "selector" + ($("#selectors")[0].childElementCount + 1);
+        el[0].childNodes[1].childNodes[1].attributes.getNamedItem("name").nodeValue = idn;
+        el[0].attributes.getNamedItem("id").nodeValue = idn;
         el.appendTo( "#selectors" );
     });
 
     $("#addLink")[0].addEventListener("click",function(){
         var el = $( ".form-row" ).first().clone()
         el[0].childNodes[1].childNodes[1].attributes.getNamedItem("value").nodeValue = "";
-        el[0].attributes.getNamedItem("id").nodeValue = "url" + ($("#urls")[0].childElementCount + 1);
+        var idn = "url" + ($("#urls")[0].childElementCount + 1);
+        el[0].childNodes[1].childNodes[1].attributes.getNamedItem("name").nodeValue = idn;
+        el[0].attributes.getNamedItem("id").nodeValue = idn;
         el.appendTo( "#urls" );
     });
 
