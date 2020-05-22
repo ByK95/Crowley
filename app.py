@@ -59,7 +59,27 @@ def listcrawlers():
 @app.route('/crawler/<int:id>')
 def crawler_info(id):
     pairs , urls = getCrawlerInfo(id)
-    return render_template("crawler.html",tableTitle="Crawler Name",pairs=pairs,urls=urls)
+    return render_template("crawler.html",tableTitle="Crawler Name",pairs=pairs,urls=urls,id=id)
+
+@app.route('/crawler/edit/<id>', methods=['POST'])
+def crawler_edit(id):
+    urls = []
+    selectors = []
+
+    index = 1
+    while request.form.get('url{}'.format(index)) != None and index < 16:
+        urls.append(request.form.get('url{}'.format(index)))
+        index += 1
+
+    index = 1
+    while request.form.get('selector{}'.format(index)) != None and index < 16:
+        selectors.append(request.form.get('selector{}'.format(index)))
+        index += 1
+
+    print(urls)
+    print('')
+    print(selectors)
+    return 'OK'
 
 
 @app.route('/api/log/timer' , methods=['POST'])
