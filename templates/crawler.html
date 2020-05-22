@@ -8,13 +8,13 @@ Add More $
 {% block main %}
 <h2>{{ tableTitle }}</h2>
 
-<form id="crawlerForm" action="/crawler/edit">
+<form id="crawlerForm" action="edit" method="POST">
     <h3>Url</h3>
     {% for url in urls %}
     <div id="urls">
         <div id="url{{loop.index}}" class="form-group form-row">
             <div class="col">
-                <input type="text" class="form-control" placeholder="Url" value="{{ url }}">
+                <input type="text" class="form-control" name="url{{loop.index}}" placeholder="Url" value="{{ url }}">
             </div>
             <div class="col-md-auto">
                 <a href="{{ url }}" target="_blank" class="btn btn-outline-primary" role="button" aria-pressed="true">Page</a>
@@ -31,7 +31,7 @@ Add More $
         {% for selector in pairs %}
         <div id="selector{{ loop.index }}" class="form-group form-row">
             <div class="col">
-                <input type="text" class="form-control" placeholder="XPath Selector" value="{{ selector }}">
+                <input type="text" class="form-control" name="selector{{ loop.index }}" placeholder="XPath Selector" value="{{ selector }}">
             </div>
             <div class="col-md-auto">
                 <button onclick="remove(this)" type="button" class="btn btn-outline-secondary">X</button>
@@ -44,7 +44,7 @@ Add More $
 
 <button id="addSelector" type="button" class="btn btn-outline-secondary">Add Selector</button>
 <button id="addLink" type="button" class="btn btn-outline-secondary">Add Link</button>
-<button id="saveCrawler" type="button" class="btn btn-outline-primary">Save</button>
+<button id="saveCrawler" onclick="submit()" type="button" class="btn btn-outline-primary">Save</button>
 
 
 <script>
@@ -73,9 +73,9 @@ Add More $
         $('#'+e.parentElement.parentElement.getAttribute("id")).remove();
     }
 
-    $("#saveCrawler")[0].addEventListener("click",function(){
-        document.getElementById("crawlerForm").submit();
-    });
+    function submit(){
+        document.forms["crawlerForm"].submit();
+    }
 
 </script>
 {% endblock %}
