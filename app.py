@@ -1,4 +1,4 @@
-from flask import Flask , render_template , send_from_directory , request , jsonify
+from flask import Flask , render_template , send_from_directory , request , jsonify , redirect
 from database import TimerLog, Session, SpiderDB , SpiderUrl, SpiderSelector
 from helper import getSpiders , loadSpider , getLastSpiderResult , getCrawlerInfo
 import subprocess
@@ -108,3 +108,12 @@ def run_spider(id):
 @app.route('/api/getlast/<int:id>' , methods=['POST'])
 def get_last(id):
     return getLastSpiderResult(id).result
+
+@app.route('/api/addspider' , methods=['POST'])
+def add_spider():
+    session = Session()
+    entry = SpiderDB(name = 'New Spider')
+    session.add(entry)
+    session.commit()
+    return jsonify({'res':entry.id})
+    
