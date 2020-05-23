@@ -107,7 +107,10 @@ def run_spider(id):
 
 @app.route('/api/getlast/<int:id>' , methods=['POST'])
 def get_last(id):
-    return getLastSpiderResult(id).result
+    last_result = getLastSpiderResult(id)
+    if last_result != None:
+        return last_result.result
+    return "err"
 
 @app.route('/api/addspider' , methods=['POST'])
 def add_spider():
