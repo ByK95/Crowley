@@ -118,5 +118,17 @@ def add_spider():
     entry = SpiderDB(name = 'New Spider')
     session.add(entry)
     session.commit()
+    session.add(SpiderUrl(spider_id=entry.id, url="Url"))
+    session.add(SpiderSelector(spider_id=entry.id, selector="Selector"))
+    session.commit()
+    return jsonify({'res':entry.id})
+
+@app.route('/api/delspider/<int:id>' , methods=['POST'])
+def del_spider(id):
+    session = Session()
+    session.query(SpiderDB).filter(SpiderDB.id == id).delete()
+    session.query(SpiderUrl).filter(SpiderUrl.spider_id == id).delete()
+    session.query(SpiderSelector).filter(SpiderSelector.spider_id == id).delete()
+    session.commit()
     return jsonify({'res':entry.id})
     
