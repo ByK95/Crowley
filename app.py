@@ -1,5 +1,5 @@
 from flask import Flask , render_template , send_from_directory , request , jsonify , redirect
-from database import TimerLog, Session, SpiderDB , SpiderUrl, SpiderSelector
+from database import TimerLog, Session, SpiderDB , SpiderUrl, SpiderSelector , NotifMessage
 from helper import getSpiders , loadSpider , getLastSpiderResult , getCrawlerInfo
 import subprocess
 from sqlalchemy import desc
@@ -54,7 +54,7 @@ def listcrawlers():
     for val in result:
         data.append([val.name])
 
-    return render_template("table.html",tableTitle=title,data=data,headers=headers)
+    return render_template("table.html",tableTitle=title,data=data,headers=headers, notif= 5)
 
 @app.route('/crawler/<int:id>', methods=['GET','POST'])
 def crawler_edit(id):
@@ -132,3 +132,17 @@ def del_spider(id):
     session.commit()
     return jsonify({'res':entry.id})
     
+@app.route('/history')
+def history():
+    title = "Notification List"
+    data = []
+    headers = ['Message','Link','Date']
+
+    session = Session()
+    result = session.query(NotifMessage)[0:25]
+    for val in result:
+        data.append([val.message,val.link,val.date])
+    stmt = update(NotifChecked).where(NotifChecked.id == 1).values(date == datetime.datetime.now())
+    session.commit()
+
+    return render_template("table.html",tableTitle=title,data=data,headers=headers, notif= 5)

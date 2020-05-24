@@ -45,4 +45,18 @@ class SpiderResult(Base):
 	timestamp = Column(DateTime)
 	result = Column(String)
 
+class NotifMessage(Base):
+	__tablename__ = 'notifications'
+
+	id = Column(Integer,primary_key=True)
+	message = Column(String)
+	link = Column(String)
+	date = Column(DateTime)
+
+class NotifChecked(Base):
+	__tablename__ = 'lastchecknotif'
+
+	id = Column(Integer,primary_key=True)
+	date = Column(DateTime)
+
 Base.metadata.create_all(engine)
