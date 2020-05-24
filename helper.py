@@ -62,7 +62,7 @@ def addNotifChecked():
     session.add(NotifChecked(date=datetime.datetime.now()))
     session.commit()
 
-def getNotifCount(id):
+def notifCount(id):
     a = session.query(NotifChecked).filter(NotifChecked.id == id).first()
     date = a.date
     return session.query(NotifMessage).filter(NotifMessage.date > date).count()

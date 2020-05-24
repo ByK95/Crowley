@@ -43,19 +43,6 @@ def collect():
     title = "Collect Data From Web"
     return render_template("collect.html",tableTitle=title,spiders=getSpiders())
 
-@app.route('/listcrawlers')
-def listcrawlers():
-    title = "Collection of Spiders"
-    data = []
-    headers = ['Name']
-
-    session = Session()
-    result = session.query(SpiderDB)[0:15]
-    for val in result:
-        data.append([val.name])
-
-    return render_template("table.html",tableTitle=title,data=data,headers=headers, notif= 5)
-
 @app.route('/crawler/<int:id>', methods=['GET','POST'])
 def crawler_edit(id):
     if request.method == 'POST':
