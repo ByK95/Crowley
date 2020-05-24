@@ -3,6 +3,8 @@ from collector import *
 from sqlalchemy import desc
 import datetime
 
+session = Session()
+
 def getSpiders():
     data = []
     session = Session()
@@ -54,3 +56,18 @@ def loadSpider(id):
     spider.lastscrap = lastscrap
 
     return spider
+
+def addNotifChecked():
+    session = Session()
+    session.add(NotifChecked(date=datetime.datetime.now()))
+    session.commit()
+
+def getNotifCount(id):
+    a = session.query(NotifChecked).filter(NotifChecked.id == id).first()
+    date = a.date
+    return session.query(NotifMessage).filter(NotifMessage.date > date).count()
+
+def addNotifMessage(message,link):
+    notif = NotifMessage(message = message, link = link, date = datetime.datetime.now())
+    session.add(notif)
+    session.commit()
