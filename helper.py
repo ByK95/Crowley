@@ -1,6 +1,8 @@
 from database import *
 from collector import *
 from sqlalchemy import desc
+from functools import wraps
+from flask import session , redirect
 import datetime
 
 def getSpiders():
