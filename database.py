@@ -7,6 +7,15 @@ Base = declarative_base()
 engine = create_engine('sqlite:///data.db', echo=True)
 Session = sessionmaker(bind=engine)
 
+class User(Base):
+	__tablename__ = 'users'
+
+	id = Column(Integer,primary_key=True)
+	username = Column(String, unique=True)
+	emailAddress = Column(String, unique=True)
+	passwordSalt = Column(String)
+	passwordHash = Column(String)
+
 class TimerLog(Base):
 	__tablename__ = 'timerstamps'
 
