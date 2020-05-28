@@ -1,12 +1,20 @@
-from flask import Flask , render_template , send_from_directory , request , jsonify , redirect
-from database import TimerLog, Session, SpiderDB , SpiderUrl, SpiderSelector
-from helper import getSpiders , loadSpider , getLastSpiderResult , getCrawlerInfo
+from flask import Flask , render_template , send_from_directory , request , jsonify , redirect , session
+from flask_session import Session as sess
+from tempfile import mkdtemp
+from database import TimerLog, Session, SpiderDB , SpiderUrl, SpiderSelector , User
+from helper import getSpiders , loadSpider , getLastSpiderResult , getCrawlerInfo , login_required
+from werkzeug.security import check_password_hash, generate_password_hash
 import subprocess
 from sqlalchemy import desc
 
 import datetime
 
 app = Flask(__name__, static_url_path='')
+app.config["SESSION_FILE_DIR"] = mkdtemp()
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+sess(app)
+
 
 @app.route('/asset/<path:path>')
 def send_asset(path):
@@ -20,7 +28,9 @@ def hello_world():
 def countdown():
     return render_template("timer.html")
 
+
 @app.route('/timeractivity')
+@login_required
 def activity():
     title = "Timer Activity Table"
     data = []
@@ -39,11 +49,13 @@ def code():
     return render_template("code.html",tableTitle=title)
 
 @app.route('/collect')
+@login_required
 def collect():
     title = "Collect Data From Web"
     return render_template("collect.html",tableTitle=title,spiders=getSpiders())
 
 @app.route('/listcrawlers')
+@login_required
 def listcrawlers():
     title = "Collection of Spiders"
     data = []
@@ -57,6 +69,7 @@ def listcrawlers():
     return render_template("table.html",tableTitle=title,data=data,headers=headers)
 
 @app.route('/crawler/<int:id>', methods=['GET','POST'])
+@login_required
 def crawler_edit(id):
     if request.method == 'POST':
         urls = []
@@ -87,6 +100,7 @@ def crawler_edit(id):
     return render_template("crawler.html",tableTitle="Crawler Name",pairs=pairs,urls=urls,id=id)
 
 @app.route('/api/log/timer' , methods=['POST'])
+@login_required
 def log_timer_usage():
     if request.json:
         content = request.json
@@ -101,11 +115,13 @@ def log_timer_usage():
 
 
 @app.route('/api/run/<int:id>' , methods=['POST'])
+@login_required
 def run_spider(id):
     subprocess.Popen(["python","collect.py",str(id)])
     return "OK"
 
 @app.route('/api/getlast/<int:id>' , methods=['POST'])
+@login_required
 def get_last(id):
     last_result = getLastSpiderResult(id)
     if last_result != None:
@@ -113,6 +129,7 @@ def get_last(id):
     return "err"
 
 @app.route('/api/addspider' , methods=['POST'])
+@login_required
 def add_spider():
     session = Session()
     entry = SpiderDB(name = 'New Spider')
@@ -124,6 +141,7 @@ def add_spider():
     return jsonify({'res':entry.id})
 
 @app.route('/api/delspider/<int:id>' , methods=['POST'])
+@login_required
 def del_spider(id):
     session = Session()
     session.query(SpiderDB).filter(SpiderDB.id == id).delete()
@@ -131,4 +149,34 @@ def del_spider(id):
     session.query(SpiderSelector).filter(SpiderSelector.spider_id == id).delete()
     session.commit()
     return jsonify({'res':entry.id})
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """Log user in"""
+    session.clear()
+
+    if request.method == "POST":
+
+        if not request.form.get("username"):
+            return "ERR"
+
+        elif not request.form.get("password"):
+            return "ERR"
+
+        dBsess = Session()
+
+        query = dBsess.query(User).filter(User.username == request.form.get("username"))
+
+        if query.count() != 1:
+            return "ERR"
+        
+        if not check_password_hash(query[0].passwordHash, request.form.get("password")):
+            return "ERR"
+
+        session["user_id"] = query[0].id
+
+        return redirect("/")
+
+    else:
+        return render_template("login.html")
     
