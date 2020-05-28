@@ -36,12 +36,13 @@ def activity():
     data = []
     headers = ['Time','Interval']
 
-    session = Session()
-    result = session.query(TimerLog).order_by(desc(TimerLog.date))[0:15]
+    dbSess = Session()
+    result = dbSess.query(TimerLog).order_by(desc(TimerLog.date))[0:15]
     for val in result:
         data.append([val.date.strftime("%H:%M:%S %d/%m/%Y"),val.interval])
 
-    return render_template("table.html",headers=headers,data=data,tableTitle=title)
+    user = session.get("user_id")
+    return render_template("table.html",headers=headers,data=data,tableTitle=title,user=user)
 
 @app.route('/code')
 def code():
@@ -61,12 +62,13 @@ def listcrawlers():
     data = []
     headers = ['Name']
 
-    session = Session()
-    result = session.query(SpiderDB)[0:15]
+    dbSess = Session()
+    result = dbSess.query(SpiderDB)[0:15]
     for val in result:
         data.append([val.name])
 
-    return render_template("table.html",tableTitle=title,data=data,headers=headers)
+    user = session.get("user_id")
+    return render_template("table.html",tableTitle=title,data=data,headers=headers,user=user)
 
 @app.route('/crawler/<int:id>', methods=['GET','POST'])
 @login_required
@@ -96,8 +98,9 @@ def crawler_edit(id):
 
         session.commit()
     
+    user = session.get("user_id")
     pairs , urls = getCrawlerInfo(id)
-    return render_template("crawler.html",tableTitle="Crawler Name",pairs=pairs,urls=urls,id=id)
+    return render_template("crawler.html",tableTitle="Crawler Name",pairs=pairs,urls=urls,id=id,user=user)
 
 @app.route('/api/log/timer' , methods=['POST'])
 @login_required
@@ -180,3 +183,12 @@ def login():
     else:
         return render_template("login.html")
     
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/")
