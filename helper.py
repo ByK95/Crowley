@@ -70,3 +70,9 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def checkSpiderOwnership(user,id):
+    dbSess = Session()
+    spider_result = dbSess.query(SpiderDB).filter(SpiderDB.id == id).first()
+    if (spider_result is None) or spider_result.user_id != user:
+        return False
+    return True

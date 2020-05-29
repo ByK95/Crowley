@@ -3,6 +3,7 @@ from flask_session import Session as sess
 from tempfile import mkdtemp
 from database import TimerLog, Session, SpiderDB , SpiderUrl, SpiderSelector , User
 from helper import getSpiders , loadSpider , getLastSpiderResult , getCrawlerInfo , login_required
+from helper import checkSpiderOwnership
 from werkzeug.security import check_password_hash, generate_password_hash
 import subprocess
 from sqlalchemy import desc
@@ -125,8 +126,10 @@ def log_timer_usage():
 @app.route('/api/run/<int:id>' , methods=['POST'])
 @login_required
 def run_spider(id):
-    subprocess.Popen(["python","collect.py",str(id)])
-    return "OK"
+    if checkSpiderOwnership(session.get("user_id"),id):
+        subprocess.Popen(["python","collect.py",str(id)])
+        return "OK"
+    return "Permission Denied!"
 
 @app.route('/api/getlast/<int:id>' , methods=['POST'])
 @login_required
