@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime , ForeignKey
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -30,6 +30,7 @@ class SpiderDB(Base):
 	__tablename__ = 'spiders'
 
 	id = Column(Integer,primary_key=True)
+	user_id = Column(Integer,ForeignKey("users.id"))
 	name = Column(String)
 
 class SpiderUrl(Base):

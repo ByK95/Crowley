@@ -73,6 +73,7 @@ def listcrawlers():
 @app.route('/crawler/<int:id>', methods=['GET','POST'])
 @login_required
 def crawler_edit(id):
+    user = session.get("user_id")
     if request.method == 'POST':
         urls = []
         selectors = []
@@ -87,18 +88,22 @@ def crawler_edit(id):
             selectors.append(request.form.get('selector{}'.format(index)))
             index += 1
 
-        session = Session()
-        session.query(SpiderUrl).filter(SpiderUrl.spider_id == id).delete()
-        session.query(SpiderSelector).filter(SpiderSelector.spider_id == id).delete()
+        dbSess = Session()
+        spider_result = dbSess.query(SpiderDB).filter(SpiderDB.id == id).first()
+        if (spider_result is None) or spider_result.user_id != user:
+            return "ERR"
+
+        dbSess.query(SpiderUrl).filter(SpiderUrl.spider_id == id).delete()
+        dbSess.query(SpiderSelector).filter(SpiderSelector.spider_id == id).delete()
         for url in urls:
-            session.add(SpiderUrl(spider_id=id, url=url))
+            dbSess.add(SpiderUrl(spider_id=id, url=url))
             
         for selector in selectors:
-            session.add(SpiderSelector(spider_id=id, selector=selector))
+            dbSess.add(SpiderSelector(spider_id=id, selector=selector))
 
-        session.commit()
+        dbSess.commit()
     
-    user = session.get("user_id")
+    
     pairs , urls = getCrawlerInfo(id)
     return render_template("crawler.html",tableTitle="Crawler Name",pairs=pairs,urls=urls,id=id,user=user)
 
@@ -134,13 +139,15 @@ def get_last(id):
 @app.route('/api/addspider' , methods=['POST'])
 @login_required
 def add_spider():
-    session = Session()
-    entry = SpiderDB(name = 'New Spider')
-    session.add(entry)
-    session.commit()
-    session.add(SpiderUrl(spider_id=entry.id, url="Url"))
-    session.add(SpiderSelector(spider_id=entry.id, selector="Selector"))
-    session.commit()
+    user = session.get("user_id")
+    print(user)
+    dbSess = Session()
+    entry = SpiderDB(name = 'New Spider',user_id=user)
+    dbSess.add(entry)
+    dbSess.commit()
+    dbSess.add(SpiderUrl(spider_id=entry.id, url="Url"))
+    dbSess.add(SpiderSelector(spider_id=entry.id, selector="Selector"))
+    dbSess.commit()
     return jsonify({'res':entry.id})
 
 @app.route('/api/delspider/<int:id>' , methods=['POST'])
