@@ -1,7 +1,7 @@
 from scrapy import Spider
 from scrapy.selector import Selector
 from scrapy.crawler import CrawlerProcess
-from database import TimerLog, Session
+from database import Session
 
 class DifferenceSpider(Spider):
     

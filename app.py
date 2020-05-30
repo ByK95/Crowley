@@ -1,7 +1,7 @@
 from flask import Flask , render_template , send_from_directory , request , jsonify , redirect , session
 from flask_session import Session as sess
 from tempfile import mkdtemp
-from database import TimerLog, Session, SpiderDB , SpiderUrl, SpiderSelector , User , SpiderResult
+from database import Session, SpiderDB , SpiderUrl, SpiderSelector , User , SpiderResult
 from helper import getSpiders , loadSpider , getLastSpiderResult , getCrawlerInfo , login_required
 from helper import checkSpiderOwnership
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -24,7 +24,7 @@ def send_asset(path):
 @app.route('/')
 @login_required
 def hello_world():
-    return render_template("layout.html")
+    return redirect("/collect")
 
 
 @app.route('/collect')
