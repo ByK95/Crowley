@@ -26,30 +26,6 @@ def send_asset(path):
 def hello_world():
     return render_template("layout.html")
 
-@app.route('/timer')
-def countdown():
-    return render_template("timer.html")
-
-
-@app.route('/timeractivity')
-@login_required
-def activity():
-    title = "Timer Activity Table"
-    data = []
-    headers = ['Time','Interval']
-
-    dbSess = Session()
-    result = dbSess.query(TimerLog).order_by(desc(TimerLog.date))[0:15]
-    for val in result:
-        data.append([val.date.strftime("%H:%M:%S %d/%m/%Y"),val.interval])
-
-    user = session.get("user_id")
-    return render_template("table.html",headers=headers,data=data,tableTitle=title,user=user)
-
-@app.route('/code')
-def code():
-    title = "Search Snippets"
-    return render_template("code.html",tableTitle=title)
 
 @app.route('/collect')
 @login_required

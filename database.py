@@ -16,16 +16,6 @@ class User(Base):
 	passwordSalt = Column(String)
 	passwordHash = Column(String)
 
-class TimerLog(Base):
-	__tablename__ = 'timerstamps'
-
-	id = Column(Integer,primary_key=True)
-	interval = Column(String)
-	date = Column(DateTime)
-
-	def __repr__(self):
-		return "<Timer Activity ('%s')>" % self.date
-
 class SpiderDB(Base):
 	__tablename__ = 'spiders'
 
