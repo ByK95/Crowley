@@ -24,7 +24,7 @@ Add More $
             <td><a href="/crawler/{{row.id}}">{{ row.name }}</a></td>
             <td><button action='run/{{ row.id }}' type="button" class="actbtn btn btn-primary">Run </button></td>
             <td><button action='getlast/{{ row.id }}' type="button" class="actbtn btn btn-info">Get last result</button></td>
-            <td><button action='deactivate/{{ row.id }}' type="button" class="actbtn btn btn-warning">Hide</button></td>
+            <td><button onclick="viewAll({{ row.id }})" type="button" class="btn btn-success">View All</button></td>
             <td><button action='delspider/{{ row.id }}' type="button" class="actbtn btn btn-danger">Delete</button></td>
         </tr>
         {% endfor %}
@@ -44,6 +44,10 @@ Add More $
                 window.location.href = '/crawler/' + data.res;
             }
         });
+    }
+
+    function viewAll(id){
+        window.location.href = '/viewcollected/' + id;
     }
 
     $(".actbtn").each((index,element)=>{

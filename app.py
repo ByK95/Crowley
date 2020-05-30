@@ -1,7 +1,7 @@
 from flask import Flask , render_template , send_from_directory , request , jsonify , redirect , session
 from flask_session import Session as sess
 from tempfile import mkdtemp
-from database import TimerLog, Session, SpiderDB , SpiderUrl, SpiderSelector , User
+from database import TimerLog, Session, SpiderDB , SpiderUrl, SpiderSelector , User , SpiderResult
 from helper import getSpiders , loadSpider , getLastSpiderResult , getCrawlerInfo , login_required
 from helper import checkSpiderOwnership
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -22,6 +22,7 @@ def send_asset(path):
     return send_from_directory('static', path)
 
 @app.route('/')
+@login_required
 def hello_world():
     return render_template("layout.html")
 
@@ -53,23 +54,9 @@ def code():
 @app.route('/collect')
 @login_required
 def collect():
-    title = "Collect Data From Web"
-    return render_template("collect.html",tableTitle=title,spiders=getSpiders())
-
-@app.route('/listcrawlers')
-@login_required
-def listcrawlers():
-    title = "Collection of Spiders"
-    data = []
-    headers = ['Name']
-
-    dbSess = Session()
-    result = dbSess.query(SpiderDB)[0:15]
-    for val in result:
-        data.append([val.name])
-
     user = session.get("user_id")
-    return render_template("table.html",tableTitle=title,data=data,headers=headers,user=user)
+    title = "Collect Data From Web"
+    return render_template("collect.html",tableTitle=title,spiders=getSpiders(),user=user)
 
 @app.route('/crawler/<int:id>', methods=['GET','POST'])
 @login_required
@@ -107,6 +94,24 @@ def crawler_edit(id):
     
     pairs , urls = getCrawlerInfo(id)
     return render_template("crawler.html",tableTitle="Crawler Name",pairs=pairs,urls=urls,id=id,user=user)
+
+@app.route('/viewcollected/<int:id>', methods=['GET'])
+@login_required
+def crawled_data(id):
+    user = session.get("user_id")
+    if checkSpiderOwnership(user,id):
+        dbSess = Session()
+        results = dbSess.query(SpiderResult).filter(SpiderResult.spider_id == id).order_by(desc(SpiderResult.timestamp))[0:25]
+
+        title = "Crawled Results"
+        data = []
+        headers = ['Time','Crawled Data']
+
+        for val in results:
+            data.append([val.timestamp.strftime("%H:%M %d/%m/%Y"),val.result])
+
+        return render_template("table.html",tableTitle=title,data=data,headers=headers,user=user)
+    return "Permission Denied"
 
 @app.route('/api/log/timer' , methods=['POST'])
 @login_required
