@@ -134,9 +134,10 @@ def run_spider(id):
 @app.route('/api/getlast/<int:id>' , methods=['POST'])
 @login_required
 def get_last(id):
-    last_result = getLastSpiderResult(id)
-    if last_result != None:
-        return last_result.result
+    if checkSpiderOwnership(session.get("user_id"),id):
+        result = getLastSpiderResult(id)
+        if result != None:
+            return result.result
     return "err"
 
 @app.route('/api/addspider' , methods=['POST'])
