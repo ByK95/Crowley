@@ -14,19 +14,18 @@ def getSpiders():
     return data
 
 def save(self,data):
-    if (self.lastscrap != None) and self.lastscrap.result == data[0]:
-        return
     session = Session()
+    if (self.lastscrap != None) and self.lastscrap.result == data[0]:
+        self.lastscrap.timestamp = datetime.datetime.now()
+        session.commit()
+        return
     entry = SpiderResult(spider_id=self.id,timestamp=datetime.datetime.now(),result=data[0])
     session.add(entry)
     session.commit()
 
 def getLastSpiderResult(id):
     session = Session()
-    res = session.query(SpiderResult).filter(SpiderResult.spider_id == id).order_by(desc(SpiderResult.timestamp)).first()
-    if res != None:
-        return res
-    
+    return session.query(SpiderResult).filter(SpiderResult.spider_id == id).order_by(desc(SpiderResult.timestamp)).first()
 
 def getCrawlerInfo(id):
     session = Session()
