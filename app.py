@@ -38,6 +38,9 @@ def collect():
 @login_required
 def crawler_edit(id):
     user = session.get("user_id")
+    dbSess = Session()
+    spider = dbSess.query(SpiderDB).filter(SpiderDB.id == id).first()
+    name = None or spider.name
     if request.method == 'POST':
         urls = []
         selectors = []
@@ -52,11 +55,13 @@ def crawler_edit(id):
             selectors.append(request.form.get('selector{}'.format(index)))
             index += 1
 
-        dbSess = Session()
-        spider_result = dbSess.query(SpiderDB).filter(SpiderDB.id == id).first()
-        if (spider_result is None) or spider_result.user_id != user:
+        if not checkSpiderOwnership(user,id):
             return "ERR"
 
+        if request.form.get('name') != "":
+            name = request.form.get('name')
+        
+        spider.name = name
         dbSess.query(SpiderUrl).filter(SpiderUrl.spider_id == id).delete()
         dbSess.query(SpiderSelector).filter(SpiderSelector.spider_id == id).delete()
         for url in urls:
@@ -69,7 +74,7 @@ def crawler_edit(id):
     
     
     pairs , urls = getCrawlerInfo(id)
-    return render_template("crawler.html",tableTitle="Crawler Name",pairs=pairs,urls=urls,id=id,user=user)
+    return render_template("crawler.html", name=name, pairs=pairs, urls=urls, id=id, user=user)
 
 @app.route('/viewcollected/<int:id>', methods=['GET'])
 @login_required
@@ -128,7 +133,7 @@ def del_spider(id):
     session.query(SpiderUrl).filter(SpiderUrl.spider_id == id).delete()
     session.query(SpiderSelector).filter(SpiderSelector.spider_id == id).delete()
     session.commit()
-    return jsonify({'res':entry.id})
+    return jsonify({'res':id})
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

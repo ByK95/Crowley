@@ -6,10 +6,17 @@ Add More $
 
 
 {% block main %}
-<h2>{{ tableTitle }}</h2>
+<div class="pb-4">
+    <h2>Edit Crawler</h2>
+</div>
 
 <form id="crawlerForm" action="" method="POST">
-    <h3>Url</h3>
+    <div class="col crawl-name">
+        <input type="text" class="form-control" name="name" placeholder="Crawler Name" value="{{ name }}">
+    </div>
+    <div class="pb-2 pt-2">
+        <h3>Url</h3>
+    </div>
     {% for url in urls %}
     <div id="urls">
         <div id="url{{loop.index}}" class="form-group form-row">
@@ -26,7 +33,9 @@ Add More $
     </div>
     {% endfor %}
 
-    <h3>Selectors</h3>
+    <div class="pb-2 pt-2">
+        <h3>Selectors</h3>
+    </div>
     <div id='selectors'>
         {% for selector in pairs %}
         <div id="selector{{ loop.index }}" class="form-group form-row">
@@ -41,12 +50,21 @@ Add More $
     </div>
     
 </form>
+<div class="pt-2 crawl-buttons">
+    <button id="addSelector" type="button" class="btn btn-outline-secondary">Add Selector</button>
+    <button id="addLink" type="button" class="btn btn-outline-secondary">Add Link</button>
+    <button id="saveCrawler" onclick="submit()" type="button" class="btn btn-outline-primary">Save</button>    
+</div>
 
-<button id="addSelector" type="button" class="btn btn-outline-secondary">Add Selector</button>
-<button id="addLink" type="button" class="btn btn-outline-secondary">Add Link</button>
-<button id="saveCrawler" onclick="submit()" type="button" class="btn btn-outline-primary">Save</button>
-
-
+<style>
+    .crawl-name{
+        padding-left: 0px;
+        padding-right: 45px;
+    }
+    .crawl-buttons{
+        float: right;
+    }
+</style>
 <script>
     function addAttr(element,key,value){
         var typ = document.createAttribute(key);
