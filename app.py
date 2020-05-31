@@ -111,7 +111,7 @@ def get_last(id):
         result = getLastSpiderResult(id)
         if result != None:
             return result.result
-    return "err"
+    return "Permission Denied!"
 
 @app.route('/api/addspider' , methods=['POST'])
 @login_required
@@ -129,12 +129,14 @@ def add_spider():
 @app.route('/api/delspider/<int:id>' , methods=['POST'])
 @login_required
 def del_spider(id):
-    session = Session()
-    session.query(SpiderDB).filter(SpiderDB.id == id).delete()
-    session.query(SpiderUrl).filter(SpiderUrl.spider_id == id).delete()
-    session.query(SpiderSelector).filter(SpiderSelector.spider_id == id).delete()
-    session.commit()
-    return jsonify({'res':id})
+    if checkSpiderOwnership(session.get("user_id"),id):
+        dbSess = Session()
+        dbSess.query(SpiderDB).filter(SpiderDB.id == id).delete()
+        dbSess.query(SpiderUrl).filter(SpiderUrl.spider_id == id).delete()
+        dbSess.query(SpiderSelector).filter(SpiderSelector.spider_id == id).delete()
+        dbSess.commit()
+        return jsonify({'res':id})
+    return "Permission Denied!"
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
