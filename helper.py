@@ -15,8 +15,9 @@ def getSpiders():
 
 def save(self,data):
     session = Session()
-    if (self.lastscrap != None) and self.lastscrap.result == data[0]:
-        self.lastscrap.timestamp = datetime.datetime.now()
+    last = session.query(SpiderResult).filter(SpiderResult.spider_id == self.id).order_by(desc(SpiderResult.timestamp)).first()
+    if (last != None) and last.result == data[0]:
+        last.timestamp = datetime.datetime.now()
         session.commit()
         return
     entry = SpiderResult(spider_id=self.id,timestamp=datetime.datetime.now(),result=data[0])
