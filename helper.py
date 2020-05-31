@@ -6,10 +6,10 @@ from flask import session , redirect
 import datetime
 import base64
 
-def getSpiders():
+def getSpiders(id):
     data = []
     session = Session()
-    result = session.query(SpiderDB)[0:15]
+    result = session.query(SpiderDB).filter(SpiderDB.user_id == id)[0:15]
     for val in result:
         data.append(val)
     return data

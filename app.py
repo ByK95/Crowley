@@ -32,7 +32,7 @@ def hello_world():
 def collect():
     user = session.get("user_id")
     title = "Collect Data From Web"
-    return render_template("collect.html",tableTitle=title,spiders=getSpiders(),user=user)
+    return render_template("collect.html",tableTitle=title,spiders=getSpiders(user),user=user)
 
 @app.route('/crawler/<int:id>', methods=['GET','POST'])
 @login_required
