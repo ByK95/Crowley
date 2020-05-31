@@ -71,6 +71,7 @@ def crawler_edit(id):
             dbSess.add(SpiderSelector(spider_id=id, selector=selector))
 
         dbSess.commit()
+        return redirect("/collect")
     
     
     pairs , urls = getCrawlerInfo(id)
