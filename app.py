@@ -89,20 +89,6 @@ def crawled_data(id):
         return render_template("table.html",tableTitle=title,data=data,headers=headers,user=user)
     return "Permission Denied"
 
-@app.route('/api/log/timer' , methods=['POST'])
-@login_required
-def log_timer_usage():
-    if request.json:
-        content = request.json
-        print(content)
-        if content['intr'] != None or content['intr'] != '':
-            session = Session()
-            entry = TimerLog(interval=content['intr'],date=datetime.datetime.now())
-            session.add(entry)
-            session.commit()
-            return jsonify({'res':'success'})
-    return jsonify({'res':'err'})
-
 
 @app.route('/api/run/<int:id>' , methods=['POST'])
 @login_required
@@ -125,7 +111,6 @@ def get_last(id):
 @login_required
 def add_spider():
     user = session.get("user_id")
-    print(user)
     dbSess = Session()
     entry = SpiderDB(name = 'New Spider',user_id=user)
     dbSess.add(entry)
