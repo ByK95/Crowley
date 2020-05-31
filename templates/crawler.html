@@ -13,11 +13,11 @@ Add More $
     {% for url in urls %}
     <div id="urls">
         <div id="url{{loop.index}}" class="form-group form-row">
+            <div class="col-md-auto">
+                <a onclick="goto(this)" target="_blank" class="btn btn-outline-primary" role="button" aria-pressed="true">Goto</a>
+            </div>
             <div class="col">
                 <input type="text" class="form-control" name="url{{loop.index}}" placeholder="Url" value="{{ url }}">
-            </div>
-            <div class="col-md-auto">
-                <a href="{{ url }}" target="_blank" class="btn btn-outline-primary" role="button" aria-pressed="true">Page</a>
             </div>
             <div class="col-md-auto">
                 <button onclick="remove(this)" type="button" class="btn btn-outline-secondary">X</button>
@@ -57,18 +57,19 @@ Add More $
 
     $("#addSelector")[0].addEventListener("click",function(){
         var el = $( "#selector1" ).first().clone()
-        el[0].childNodes[1].childNodes[1].attributes.getNamedItem("value").nodeValue = "";
         var idn = "selector" + ($("#selectors")[0].childElementCount + 1);
         el[0].childNodes[1].childNodes[1].attributes.getNamedItem("name").nodeValue = idn;
         el[0].attributes.getNamedItem("id").nodeValue = idn;
         el.appendTo( "#selectors" );
+        el[0].childNodes[1].childNodes[1].value = "";
     });
 
     $("#addLink")[0].addEventListener("click",function(){
         var el = $( ".form-row" ).first().clone()
-        el[0].childNodes[1].childNodes[1].attributes.getNamedItem("value").nodeValue = "";
         var idn = "url" + ($("#urls")[0].childElementCount + 1);
-        el[0].childNodes[1].childNodes[1].attributes.getNamedItem("name").nodeValue = idn;
+        var textbox = el[0].childNodes[3].childNodes[1];
+        textbox.value = "";
+        textbox.attributes.getNamedItem("name").nodeValue = idn;
         el[0].attributes.getNamedItem("id").nodeValue = idn;
         el.appendTo( "#urls" );
     });
@@ -79,6 +80,12 @@ Add More $
 
     function submit(){
         document.forms["crawlerForm"].submit();
+    }
+
+    function goto(e){
+        console.log(e)
+        var win = window.open(e.parentElement.parentElement.childNodes[3].childNodes[1].value, '_blank');
+        win.focus();
     }
 
 </script>
