@@ -6,7 +6,7 @@ from helper import getSpiders , loadSpider , getLastSpiderResult , getCrawlerInf
 from helper import checkSpiderOwnership , decode
 from werkzeug.security import check_password_hash, generate_password_hash
 import subprocess
-from sqlalchemy import desc
+from sqlalchemy import desc,exc
 
 import datetime
 
@@ -175,3 +175,29 @@ def logout():
 
     # Redirect user to login form
     return redirect("/")
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Register user"""
+    if request.method == "POST":
+
+        form = {"username":None,"email":None,"password":None}
+        for i in form:
+            if request.form.get(i) is None or request.form.get(i) == "":
+                return "Must Provide {}".format(i)
+            form[i] = request.form.get(i)
+
+        passhash = generate_password_hash(request.form.get("password"))
+
+        dBsess = Session()
+        new_user = User(username = form["username"], emailAddress = form["email"], passwordHash = passhash)
+        
+        try:
+            dBsess.add(new_user)
+            dBsess.commit()
+        except exc.IntegrityError:
+            return "This user already exists"
+
+        return redirect("/")
+    else:
+        return render_template("register.html")
