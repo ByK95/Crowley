@@ -93,16 +93,16 @@ def crawled_data(id):
             data.append([val.timestamp.strftime("%H:%M %d/%m/%Y"),decode(val.result)])
 
         return render_template("table.html",tableTitle=title,data=data,headers=headers,user=user)
-    return "Permission Denied"
+    return render_template("error.html",errTitle='Permission Denied!', redir="/viewcollected")
 
 
-@app.route('/api/run/<int:id>' , methods=['POST'])
+@app.route('/api/run/<int:id>' , methods=['GET','POST'])
 @login_required
 def run_spider(id):
     if checkSpiderOwnership(session.get("user_id"),id):
         subprocess.Popen(["python","collect.py",str(id)])
         return "OK"
-    return "Permission Denied!"
+    return render_template("error.html",errTitle='Permission Denied!', redir="/collect")
 
 @app.route('/api/getlast/<int:id>' , methods=['POST'])
 @login_required
@@ -111,7 +111,7 @@ def get_last(id):
         result = getLastSpiderResult(id)
         if result != None:
             return result.result
-    return "Permission Denied!"
+    return render_template("error.html",errTitle='Permission Denied!', redir="/collect")
 
 @app.route('/api/addspider' , methods=['POST'])
 @login_required
@@ -136,7 +136,7 @@ def del_spider(id):
         dbSess.query(SpiderSelector).filter(SpiderSelector.spider_id == id).delete()
         dbSess.commit()
         return jsonify({'res':id})
-    return "Permission Denied!"
+    return render_template("error.html",errTitle='Permission Denied!', redir="/login")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -146,20 +146,20 @@ def login():
     if request.method == "POST":
 
         if not request.form.get("username"):
-            return "ERR"
+            return render_template("error.html",errTitle='Username is required!', redir="/login")
 
         elif not request.form.get("password"):
-            return "ERR"
+            return render_template("error.html",errTitle='Password is required!', redir="/login")
 
         dBsess = Session()
 
         query = dBsess.query(User).filter(User.username == request.form.get("username"))
 
         if query.count() != 1:
-            return "ERR"
+            return render_template("error.html",errTitle='User does not exists!')
         
         if not check_password_hash(query[0].passwordHash, request.form.get("password")):
-            return "ERR"
+            return render_template("error.html",errTitle='Wrong password!', redir="/login")
 
         session["user_id"] = query[0].id
 
@@ -198,7 +198,7 @@ def register():
             dBsess.add(new_user)
             dBsess.commit()
         except exc.IntegrityError:
-            return "This user already exists"
+            return render_template("error.html",errTitle='User exists!',redir="/register")
 
         return redirect("/")
     else:
