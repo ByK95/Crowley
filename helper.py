@@ -4,6 +4,7 @@ from sqlalchemy import desc
 from functools import wraps
 from flask import session , redirect
 import datetime
+import base64
 
 def getSpiders():
     data = []
@@ -14,15 +15,23 @@ def getSpiders():
     return data
 
 def save(self,data):
+    encoded = []
+    for piece in data:
+        encoded.append(str(base64.b64encode(piece.encode("utf-8")),"utf-8"))
+    result = ",".join(encoded)
     session = Session()
     last = session.query(SpiderResult).filter(SpiderResult.spider_id == self.id).order_by(desc(SpiderResult.timestamp)).first()
-    if (last != None) and last.result == data[0]:
+    if (last != None) and last.result == result:
         last.timestamp = datetime.datetime.now()
         session.commit()
         return
-    entry = SpiderResult(spider_id=self.id,timestamp=datetime.datetime.now(),result=data[0])
+    entry = SpiderResult(spider_id=self.id,timestamp=datetime.datetime.now(),result=result)
     session.add(entry)
     session.commit()
+
+def decode(text):
+    vals = text.split(',')
+    return list(map( lambda a : str(base64.b64decode(a),"utf-8"),vals))
 
 def getLastSpiderResult(id):
     session = Session()

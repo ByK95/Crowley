@@ -3,7 +3,7 @@ from flask_session import Session as sess
 from tempfile import mkdtemp
 from database import Session, SpiderDB , SpiderUrl, SpiderSelector , User , SpiderResult
 from helper import getSpiders , loadSpider , getLastSpiderResult , getCrawlerInfo , login_required
-from helper import checkSpiderOwnership
+from helper import checkSpiderOwnership , decode
 from werkzeug.security import check_password_hash, generate_password_hash
 import subprocess
 from sqlalchemy import desc
@@ -90,7 +90,7 @@ def crawled_data(id):
         headers = ['Time','Crawled Data']
 
         for val in results:
-            data.append([val.timestamp.strftime("%H:%M %d/%m/%Y"),val.result])
+            data.append([val.timestamp.strftime("%H:%M %d/%m/%Y"),decode(val.result)])
 
         return render_template("table.html",tableTitle=title,data=data,headers=headers,user=user)
     return "Permission Denied"
