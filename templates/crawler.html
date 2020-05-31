@@ -17,8 +17,8 @@ Add More $
     <div class="pb-2 pt-2">
         <h3>Url</h3>
     </div>
-    {% for url in urls %}
     <div id="urls">
+        {% for url in urls %}
         <div id="url{{loop.index}}" class="form-group form-row">
             <div class="col-md-auto">
                 <a onclick="goto(this)" target="_blank" class="btn btn-outline-primary" role="button" aria-pressed="true">Goto</a>
@@ -30,9 +30,9 @@ Add More $
                 <button onclick="remove(this)" type="button" class="btn btn-outline-secondary">X</button>
             </div>
         </div> 
+        {% endfor %}
     </div>
-    {% endfor %}
-
+    
     <div class="pb-2 pt-2">
         <h3>Selectors</h3>
     </div>
@@ -74,6 +74,9 @@ Add More $
     }
 
     $("#addSelector")[0].addEventListener("click",function(){
+        if( checkLimit("#selectors") ){
+            return;
+        }
         var el = $( "#selector1" ).first().clone()
         var idn = "selector" + ($("#selectors")[0].childElementCount + 1);
         el[0].childNodes[1].childNodes[1].attributes.getNamedItem("name").nodeValue = idn;
@@ -83,6 +86,9 @@ Add More $
     });
 
     $("#addLink")[0].addEventListener("click",function(){
+        if( checkLimit("#urls") ){
+            return;
+        }
         var el = $( ".form-row" ).first().clone()
         var idn = "url" + ($("#urls")[0].childElementCount + 1);
         var textbox = el[0].childNodes[3].childNodes[1];
@@ -91,6 +97,13 @@ Add More $
         el[0].attributes.getNamedItem("id").nodeValue = idn;
         el.appendTo( "#urls" );
     });
+
+    function checkLimit(elem){
+        if($(elem)[0].childElementCount > 14){
+            return true;
+        }
+        return false;
+    }
 
     function remove(e){
         $('#'+e.parentElement.parentElement.getAttribute("id")).remove();
