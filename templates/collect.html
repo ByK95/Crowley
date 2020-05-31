@@ -12,7 +12,7 @@ Add More $
         <tr>
           <th scope="col">#</th>
           <th scope="col">Crawler Name</th>
-          <th scope="col"></th>
+          <th scope="col"><a href="#" onclick="runAll()">Run all <i class="fas fa-spider "></i></a></th>
           <th scope="col"></th>
           <th scope="col"></th>
         </tr>
@@ -23,7 +23,7 @@ Add More $
             <th scope="row">{{loop.index}}</th>
             <td><a href="/crawler/{{row.id}}">{{ row.name }}</a></td>
             <td><button action='run/{{ row.id }}' type="button" class="actbtn btn btn-primary">Run </button></td>
-            <td><button onclick="viewAll({{ row.id }})" type="button" class="btn btn-success">View All</button></td>
+            <td><button onclick="viewAll({{ row.id }})" type="button" class="btn btn-success">View Data</button></td>
             <td><button action='delspider/{{ row.id }}' type="button" class="actbtn btn btn-danger">Delete</button></td>
         </tr>
         {% endfor %}
@@ -42,6 +42,17 @@ Add More $
             success: function(data){
                 window.location.href = '/crawler/' + data.res;
             }
+        });
+    }
+
+    function runAll(){
+        $.post({
+            type: 'POST',
+            url: '/api/crawlall',
+            contentType: "application/json",
+            dataType: 'json',
+            data: JSON.stringify({}),
+            success: function(){}
         });
     }
 

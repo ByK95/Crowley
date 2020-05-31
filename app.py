@@ -96,13 +96,22 @@ def crawled_data(id):
     return render_template("error.html",errTitle='Permission Denied!', redir="/viewcollected")
 
 
-@app.route('/api/run/<int:id>' , methods=['GET','POST'])
+@app.route('/api/run/<int:id>' , methods=['POST'])
 @login_required
 def run_spider(id):
     if checkSpiderOwnership(session.get("user_id"),id):
         subprocess.Popen(["python","collect.py",str(id)])
         return "OK"
     return render_template("error.html",errTitle='Permission Denied!', redir="/collect")
+
+@app.route('/api/crawlall' , methods=['POST'])
+@login_required
+def crawlall():
+    dbSess = Session()
+    spiders = dbSess.query(SpiderDB).filter(SpiderDB.user_id == session.get("user_id"))
+    for spidey in spiders:
+        subprocess.Popen(["python","collect.py",str(spidey.id)])
+    return "OK"
 
 @app.route('/api/getlast/<int:id>' , methods=['POST'])
 @login_required
