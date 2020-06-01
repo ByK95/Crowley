@@ -38,9 +38,12 @@ def collect():
 @login_required
 def crawler_edit(id):
     user = session.get("user_id")
+
+    if not checkSpiderOwnership(user,id):
+        return render_template("error.html",errTitle='Permission Denied!', redir="/collect")
+
     dbSess = Session()
     spider = dbSess.query(SpiderDB).filter(SpiderDB.id == id).first()
-    name = None or spider.name
     if request.method == 'POST':
         urls = []
         selectors = []
@@ -55,11 +58,16 @@ def crawler_edit(id):
             selectors.append(request.form.get('selector{}'.format(index)))
             index += 1
 
-        if not checkSpiderOwnership(user,id):
-            return "ERR"
-
         if request.form.get('name') != "":
             name = request.form.get('name')
+
+        try:
+            spider_type = int(request.form.get('crawlertype'))
+        except ValueError:
+            return render_template("error.html",errTitle='Whoops!', redir="/crawler/{}".format(id))
+
+        if spider_type > 0 and spider_type < 3:
+            spider.spider_type = spider_type
         
         spider.name = name
         dbSess.query(SpiderUrl).filter(SpiderUrl.spider_id == id).delete()
@@ -75,7 +83,7 @@ def crawler_edit(id):
     
     
     pairs , urls = getCrawlerInfo(id)
-    return render_template("crawler.html", name=name, pairs=pairs, urls=urls, id=id, user=user)
+    return render_template("crawler.html", spider = spider, pairs=pairs, urls=urls, id=id, user=user)
 
 @app.route('/viewcollected/<int:id>', methods=['GET'])
 @login_required

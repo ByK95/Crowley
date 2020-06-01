@@ -14,7 +14,7 @@ def getSpiders(id):
         data.append(val)
     return data
 
-def save(self,data):
+def DifferenceCrawlerSave(self,data):
     encoded = []
     for piece in data:
         encoded.append(str(base64.b64encode(piece.encode("utf-8")),"utf-8"))
@@ -25,6 +25,16 @@ def save(self,data):
         last.timestamp = datetime.datetime.now()
         session.commit()
         return
+    entry = SpiderResult(spider_id=self.id,timestamp=datetime.datetime.now(),result=result)
+    session.add(entry)
+    session.commit()
+
+def NormalCrawlerSave(self,data):
+    encoded = []
+    for piece in data:
+        encoded.append(str(base64.b64encode(piece.encode("utf-8")),"utf-8"))
+    result = ",".join(encoded)
+    session = Session()
     entry = SpiderResult(spider_id=self.id,timestamp=datetime.datetime.now(),result=result)
     session.add(entry)
     session.commit()
@@ -53,17 +63,18 @@ def getCrawlerInfo(id):
     return pairs,urls
 
 def loadSpider(id):
-    pairs, urls = getCrawlerInfo(id) 
+    pairs, urls = getCrawlerInfo(id)
+    session = Session()
+    dbspider = session.query(SpiderDB).filter(SpiderDB.id == id).first()
 
-    lastscrap = getLastSpiderResult(id)
+    types = {1:NormalCrawlerSave,2:DifferenceCrawlerSave}
 
     spider = DifferenceSpider
-    spider.name = "placeholder"
+    spider.name = dbspider.name
     spider.id = id
     spider.pairs = pairs
     spider.start_urls = urls
-    spider.afterCrawl = save
-    spider.lastscrap = lastscrap
+    spider.afterCrawl = types[dbspider.spider_type]
 
     return spider
 

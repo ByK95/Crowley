@@ -12,8 +12,17 @@ Add More $
 
 <form id="crawlerForm" action="" method="POST">
     <div class="col crawl-name">
-        <input type="text" class="form-control" name="name" placeholder="Crawler Name" value="{{ name }}">
+        <input type="text" class="form-control" name="name" placeholder="Crawler Name" value="{{ spider.name }}">
     </div>
+    <div class="input-group pt-2 pb-2 crawl-name">
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="crawlertype">Crawler Type</label>
+        </div>
+        <select class="custom-select" name="crawlertype">
+          <option value="1" {% if spider.spider_type == 1 %} selected {% endif %} >Normal</option>
+          <option value="2" {% if spider.spider_type == 2 %} selected {% endif %} >Difference Crawler</option>
+        </select>
+      </div>
     <div class="pb-2 pt-2">
         <h3>Url</h3>
     </div>

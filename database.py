@@ -22,6 +22,7 @@ class SpiderDB(Base):
 	id = Column(Integer,primary_key=True)
 	user_id = Column(Integer,ForeignKey("users.id"))
 	name = Column(String)
+	spider_type = Column(Integer)
 
 class SpiderUrl(Base):
 	__tablename__ = 'spider_url'
