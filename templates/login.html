@@ -5,11 +5,6 @@
 {% endblock %}
 
 {% block main %}
-<div class="switch">
-    <input class="switch__input" type="checkbox" id="themeSwitch">
-    <label aria-hidden="true" class="switch__label" for="themeSwitch">On</label>
-    <div aria-hidden="true" class="switch__marker"></div>
-  </div>
 <div class="login card m-5" style="width: 20rem;">
     <div class="login-text">
         <h2>Login</h2>
@@ -33,11 +28,6 @@
     </div>
 </div>
 
-<script>
-    document.getElementById('themeSwitch').addEventListener('change', function(event){
-  (event.target.checked) ? document.body.setAttribute('data-theme', 'dark') : document.body.removeAttribute('data-theme');
-});
-</script>
 
 <style>
 .container{
@@ -50,47 +40,10 @@
     position: relative;
     float: right;
 }
-:root, [data-theme="default"] {
-  --color-primary-darker: hsl(228, 74%, 41%);
-  --color-bg: hsl(0, 0%, 100%);
-  --color-card-bg: hsl(0, 0%, 100%);
-  --color-secondary: hsl(0, 0%, 10%);
-  --color-text:hsl(0, 0%, 10%);
-}
-
-@supports (--css: variables) {
-  [data-theme="dark"] {
-    --color-primary-darker: hsl(338, 83%, 43%);
-    --color-bg: hsl(240, 8%, 12%);
-    --color-card-bg: hsl(0, 0%, 25%);
-    --color-secondary: hsl(166, 100%, 70%);
-    --color-text:hsl(0, 0%, 100%);
-}
-
-[data-theme] {
-  background-color: hsl(0, 0%, 100%);
-  background-color: var(--color-bg);
-  color: hsl(240, 4%, 20%);
-  color: var(--color-contrast-high);
-}
-
-body{
-    background-color: var(--color-bg);
-}
-
-.card{
-    background-color: var(--color-card-bg);
-}
-
 .login-text{
-    text-align: center;
-    margin: 16px 8px 8px 8px;
-    color: var(--color-text);
-}
-
-.btn-primary{
-    background-color: var(--color-secondary);
-}
-
+      text-align: center;
+      margin: 16px 8px 8px 8px;
+      color: var(--color-text);
+  }
 </style>
 {% endblock %}
