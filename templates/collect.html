@@ -63,6 +63,14 @@ Add More $
     $(".actbtn").each((index,element)=>{
         element.addEventListener("click",function(el){
             let attr = el.target.attributes["action"].nodeValue
+            if(attr.includes("delspider")){
+                $.post({
+                    type: 'POST',
+                    url: '/api/' + attr,
+                    success: function(data){location.reload();}
+                });
+                return;
+            }
             $.post({
                 type: 'POST',
                 url: '/api/' + attr,
