@@ -13,7 +13,8 @@
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
         <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-
+        <link rel="stylesheet" href="/asset/css/theme.css">
+        <link rel="stylesheet" href="/asset/css/switch.css">
         <title>Title: {% block title %}{% endblock %}</title>
 
     </head>
@@ -41,8 +42,15 @@
         </main>
         
         <footer class="small text-center text-muted">
-            Here should be footer
+            <label class="switch">
+                <input type="checkbox" id="themeSwitch">
+                <span class="slider round"></span>
+              </label>
         </footer>
+         <script src="/asset/js/theme.js" type="text/javascript" charset="utf-8"></script>
     </body>
 
+<style>
+
+</style>
 </html>
