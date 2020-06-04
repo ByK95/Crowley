@@ -3,3 +3,4 @@ static/bike-horn.wav
 __pycache__
 data.db
 website
+flask_session

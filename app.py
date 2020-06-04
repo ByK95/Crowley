@@ -1,21 +1,55 @@
 from flask import Flask , render_template , send_from_directory , request , jsonify , redirect , session
 from flask_session import Session as sess
 from tempfile import mkdtemp
-from database import Session, SpiderDB , SpiderUrl, SpiderSelector , User , SpiderResult
-from helper import getSpiders , loadSpider , getLastSpiderResult , getCrawlerInfo , login_required
-from helper import checkSpiderOwnership , decode
 from werkzeug.security import check_password_hash, generate_password_hash
 import subprocess
 from sqlalchemy import desc,exc
-
+from flask_sqlalchemy import SQLAlchemy
+from flask_script import Manager
+from flask_migrate import Migrate, MigrateCommand
 import datetime
+from helper import login_required
+import base64
 
 app = Flask(__name__, static_url_path='')
-app.config["SESSION_FILE_DIR"] = mkdtemp()
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
+app.config.from_object('config')
 sess(app)
+db = SQLAlchemy(app)
+from database import SpiderDB , SpiderUrl, SpiderSelector , UserModel , SpiderResult
 
+def getSpiders(id):
+    data = []
+    result = SpiderDB.query.filter_by(user_id = id)[0:15]
+    for val in result:
+        data.append(val)
+    return data
+
+def checkSpiderOwnership(user,id):
+    spider_result = SpiderDB.query.filter_by(id = id).first()
+    if (spider_result is None) or spider_result.user_id != user:
+        return False
+    return True
+
+def getCrawlerInfo(id):
+    pairs = []
+    urls = [] 
+
+    result = SpiderSelector.query.filter_by(spider_id = id)
+    for i in range(result.count()):
+        pairs.append(result[i].selector)
+
+    url = SpiderUrl.query.filter_by(spider_id = id)
+    for i in range(url.count()):
+        urls.append(url[i].url)
+
+    return pairs,urls
+
+def getLastSpiderResult(id):
+    return SpiderResult.query.filter_by(spider_id = id).order_by(desc(SpiderResult.timestamp)).first()
+
+def decode(text):
+    vals = text.split(',')
+    return list(map( lambda a : str(base64.b64decode(a),"utf-8"),vals))
 
 @app.route('/asset/<path:path>')
 def send_asset(path):
@@ -42,8 +76,7 @@ def crawler_edit(id):
     if not checkSpiderOwnership(user,id):
         return render_template("error.html",errTitle='Permission Denied!', redir="/collect")
 
-    dbSess = Session()
-    spider = dbSess.query(SpiderDB).filter(SpiderDB.id == id).first()
+    spider = SpiderDB.query.filter_by(id = id).first()
     if request.method == 'POST':
         urls = []
         selectors = []
@@ -70,15 +103,15 @@ def crawler_edit(id):
             spider.spider_type = spider_type
         
         spider.name = name
-        dbSess.query(SpiderUrl).filter(SpiderUrl.spider_id == id).delete()
-        dbSess.query(SpiderSelector).filter(SpiderSelector.spider_id == id).delete()
+        SpiderUrl.query.filter_by(spider_id = id).delete()
+        SpiderSelector.query.filter_by(spider_id = id).delete()
         for url in urls:
-            dbSess.add(SpiderUrl(spider_id=id, url=url))
+            db.session.add(SpiderUrl(spider_id=id, url=url))
             
         for selector in selectors:
-            dbSess.add(SpiderSelector(spider_id=id, selector=selector))
+            db.session.add(SpiderSelector(spider_id=id, selector=selector))
 
-        dbSess.commit()
+        db.session.commit()
         return redirect("/collect")
     
     
@@ -90,8 +123,7 @@ def crawler_edit(id):
 def crawled_data(id):
     user = session.get("user_id")
     if checkSpiderOwnership(user,id):
-        dbSess = Session()
-        results = dbSess.query(SpiderResult).filter(SpiderResult.spider_id == id).order_by(desc(SpiderResult.timestamp))[0:25]
+        results = SpiderResult.query.filter_by(spider_id = id).order_by(desc(SpiderResult.timestamp))[0:25]
 
         title = "Crawled Results"
         data = []
@@ -115,8 +147,7 @@ def run_spider(id):
 @app.route('/api/crawlall' , methods=['POST'])
 @login_required
 def crawlall():
-    dbSess = Session()
-    spiders = dbSess.query(SpiderDB).filter(SpiderDB.user_id == session.get("user_id"))
+    spiders = SpiderDB.query.filter_by(user_id = session.get("user_id"))
     for spidey in spiders:
         subprocess.Popen(["python","collect.py",str(spidey.id)])
     return "OK"
@@ -134,24 +165,22 @@ def get_last(id):
 @login_required
 def add_spider():
     user = session.get("user_id")
-    dbSess = Session()
     entry = SpiderDB(name = 'New Spider',user_id=user)
-    dbSess.add(entry)
-    dbSess.commit()
-    dbSess.add(SpiderUrl(spider_id=entry.id, url="Url"))
-    dbSess.add(SpiderSelector(spider_id=entry.id, selector="Selector"))
-    dbSess.commit()
+    db.session.add(entry)
+    db.session.commit()
+    db.session.add(SpiderUrl(spider_id=entry.id, url="Url"))
+    db.session.add(SpiderSelector(spider_id=entry.id, selector="Selector"))
+    db.session.commit()
     return jsonify({'res':entry.id})
 
 @app.route('/api/delspider/<int:id>' , methods=['POST'])
 @login_required
 def del_spider(id):
     if checkSpiderOwnership(session.get("user_id"),id):
-        dbSess = Session()
-        dbSess.query(SpiderDB).filter(SpiderDB.id == id).delete()
-        dbSess.query(SpiderUrl).filter(SpiderUrl.spider_id == id).delete()
-        dbSess.query(SpiderSelector).filter(SpiderSelector.spider_id == id).delete()
-        dbSess.commit()
+        SpiderDB.query.filter_by(id = id).delete()
+        SpiderUrl.query.filter_by(spider_id = id).delete()
+        SpiderSelector.query.filter_by(spider_id = id).delete()
+        db.session.commit()
         return jsonify({'res':id})
     return render_template("error.html",errTitle='Permission Denied!', redir="/login")
 
@@ -168,9 +197,8 @@ def login():
         elif not request.form.get("password"):
             return render_template("error.html",errTitle='Password is required!', redir="/login")
 
-        dBsess = Session()
 
-        query = dBsess.query(User).filter(User.username == request.form.get("username"))
+        query = UserModel.query.filter_by(username = request.form.get("username"))
 
         if query.count() != 1:
             return render_template("error.html",errTitle='User does not exists!')
@@ -208,15 +236,18 @@ def register():
 
         passhash = generate_password_hash(request.form.get("password"))
 
-        dBsess = Session()
-        new_user = User(username = form["username"], emailAddress = form["email"], passwordHash = passhash)
+        new_user = UserModel(username = form["username"], emailAddress = form["email"], passwordHash = passhash)
         
         try:
-            dBsess.add(new_user)
-            dBsess.commit()
+            db.session.add(new_user)
+            db.session.commit()
         except exc.IntegrityError:
             return render_template("error.html",errTitle='User exists!',redir="/register")
 
         return redirect("/")
     else:
         return render_template("register.html")
+
+
+if __name__ == "__main__":
+    app.run()
