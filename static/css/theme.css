@@ -1,0 +1,87 @@
+:root, [data-theme="default"] {
+    --color-primary-darker: hsl(228, 74%, 41%);
+    --color-bg: hsl(0, 0%, 100%);
+    --color-card-bg: hsl(0, 0%, 100%);
+    --color-secondary: var(--blue);
+    --color-text:hsl(0, 0%, 10%);
+    --color-register: var(--blue);
+    --color-input: var(--dark);
+    --color-placeholder: var(--gray);
+    --color-border: var(--blue);
+    --color-border-shadow: var(--blue);
+    --color-navbar-item: rgba(0,0,0,.5);
+    --color-outline-button: #6c757d;
+    --color-outline-text: #6c757d;
+    --color-primary-button: #212529;
+    --color-table: var(--dark);
+  }
+  
+  @supports (--css: variables) {
+    [data-theme="dark"] {
+      --color-primary-darker: hsl(338, 83%, 43%);
+      --color-bg: hsl(240, 8%, 12%);
+      --color-card-bg: hsl(0, 0%, 25%);
+      --color-secondary: #64b5f6;
+      --color-text:hsl(0, 0%, 100%);
+      --color-register: #f5f5f5;
+      --color-input: #f9a825;
+      --color-placeholder: #fffde7;
+      --color-border: #7b1fa2;
+      --color-border-shadow: #ae52d4;
+      --color-navbar-item: #f5f5f5;
+      --color-outline-button: #7b1fa2;
+      --color-outline-text: #fff;
+      --color-primary-button: #fff;
+      --color-table: #fff;
+  }
+  
+  body{
+      background-color: var(--color-bg);
+  }
+  h2,th,h3{
+      color: var(--color-text);
+  }
+  .card{
+      background-color: var(--color-card-bg);
+  } 
+  .form-control,.form-control:valid,.custom-select{
+      background-color: var(--color-bg)!important;
+      color: var(--color-input);
+  }
+  .form-control:focus,.custom-select:focus{
+      border-color: var(--color-border);
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px var(--color-border-shadow);
+      outline: 0 none;
+  }
+  .input-group-text{
+    background-color: var(--color-card-bg);
+    color: var(--color-text);
+  }
+  .btn-outline-secondary:hover{
+    color: #fff;
+    background-color: var(--color-outline-button);
+    border-color: var(--color-outline-button);
+  }
+  .btn-outline-secondary{
+    color: var(--color-outline-text);
+    border-color: var(--color-outline-button);
+  }
+  .nav-link{
+      color: var(--color-navbar-item)!important;
+  }
+  .btn-outline-primary,.col-md-auto{
+    color: var(--color-primary-button);
+  }
+  .bg-light{
+      background-color: var(--color-card-bg)!important;
+  }
+  .form-control::-moz-placeholder { color: var(--color-placeholder); }
+  div a,div a:hover,td a,td a:hover,th a,th a:hover{
+      color: var(--color-register);
+  }
+  td{
+    color: var(--color-table);
+  }
+  
+  }
+  
