@@ -10,9 +10,10 @@ from sqlalchemy import desc
 from scrapy import Spider
 from scrapy.selector import Selector
 from scrapy.crawler import CrawlerProcess
+from config import SQLALCHEMY_DATABASE_URI
 
 Base = declarative_base()
-engine = create_engine('sqlite:///data.db')
+engine = create_engine(SQLALCHEMY_DATABASE_URI)
 Session = sessionmaker(bind=engine)
 
 class SpiderDB(Base):
