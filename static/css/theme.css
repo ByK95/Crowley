@@ -79,8 +79,8 @@
   div a,div a:hover,td a,td a:hover,th a,th a:hover{
       color: var(--color-register);
   }
-  td,h1{
-    color: var(--color-table);
+  td,h1,.goto{
+    color: var(--color-table)!important;
   }
   .login{
     width: 20rem;
