@@ -12,7 +12,7 @@ from helper import login_required
 import base64
 
 app = Flask(__name__, static_url_path='')
-app.config.from_object('config')
+app.config.from_object('dev_config')
 sess(app)
 db = SQLAlchemy(app)
 from database import SpiderDB , SpiderUrl, SpiderSelector , UserModel , SpiderResult
