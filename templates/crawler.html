@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Add More $
+Edit Crawler
 {% endblock %}
 
 
@@ -29,13 +29,13 @@ Add More $
     <div id="urls">
         {% for url in urls %}
         <div id="url{{loop.index}}" class="form-group form-row">
-            <div class="col-md-auto">
+            <div class="goto .col-xs-">
                 <a onclick="goto(this)" target="_blank" class="btn btn-outline-primary" role="button" aria-pressed="true">Goto</a>
             </div>
             <div class="col">
                 <input type="text" class="form-control" name="url{{loop.index}}" placeholder="Url" value="{{ url }}">
             </div>
-            <div class="col-md-auto">
+            <div class=".col-xs-">
                 <button onclick="remove(this)" type="button" class="btn btn-outline-secondary">X</button>
             </div>
         </div> 
@@ -51,7 +51,7 @@ Add More $
             <div class="col">
                 <input type="text" class="form-control" name="selector{{ loop.index }}" placeholder="XPath Selector" value="{{ selector }}">
             </div>
-            <div class="col-md-auto">
+            <div class=".col-xs-">
                 <button onclick="remove(this)" type="button" class="btn btn-outline-secondary">X</button>
             </div>
         </div>  

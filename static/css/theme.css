@@ -69,7 +69,7 @@
   .nav-link{
       color: var(--color-navbar-item)!important;
   }
-  .btn-outline-primary,.col-md-auto{
+  .btn-outline-primary,.goto,.col-md-auto{
     color: var(--color-primary-button);
   }
   .bg-light{
