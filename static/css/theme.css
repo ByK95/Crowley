@@ -76,10 +76,10 @@
       background-color: var(--color-card-bg)!important;
   }
   .form-control::-moz-placeholder { color: var(--color-placeholder); }
-  div a,div a:hover,td a,td a:hover,th a,th a:hover,h1{
+  div a,div a:hover,td a,td a:hover,th a,th a:hover{
       color: var(--color-register);
   }
-  td{
+  td,h1{
     color: var(--color-table);
   }
   
