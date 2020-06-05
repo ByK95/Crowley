@@ -15,7 +15,7 @@
         <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
         <link rel="stylesheet" href="/asset/css/theme.css">
         <link rel="stylesheet" href="/asset/css/switch.css">
-        <title>Title: {% block title %}{% endblock %}</title>
+        <title>{% block title %}{% endblock %}</title>
 
     </head>
 
@@ -41,7 +41,7 @@
             {% block main %}{% endblock %}
         </main>
         
-        <footer class="small text-center text-muted">
+        <footer class="small text-center text-muted pt-3">
             <label class="switch">
                 <input type="checkbox" id="themeSwitch">
                 <span class="slider round"></span>
