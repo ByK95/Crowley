@@ -62,6 +62,7 @@ def DifferenceCrawlerSave(self,data):
     session.commit()
 
 class DifferenceSpider(Spider):
+    handle_httpstatus_list = [301, 302]
     
     def parse(self, response):
         data = []
@@ -72,7 +73,8 @@ class DifferenceSpider(Spider):
 def NormalCrawlerSave(self,data):
     encoded = []
     for piece in data:
-        encoded.append(str(base64.b64encode(piece.encode("utf-8")),"utf-8"))
+        if piece:
+            encoded.append(str(base64.b64encode(piece.encode("utf-8")),"utf-8"))
     result = ",".join(encoded)
     session = Session()
     entry = SpiderResult(spider_id=self.id,timestamp=datetime.datetime.now(),result=result)
