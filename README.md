@@ -1,4 +1,4 @@
-# 🕷️ Crowley
+# 🕷️ Crowley a CS50 Final Project
 
 Web page that collects data from websites.
 
